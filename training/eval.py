@@ -61,13 +61,13 @@ def main() -> None:
     ap.add_argument("--haiku", type=int, default=0)
     ap.add_argument("--only", default="")
     a = ap.parse_args()
-    rows = load("eval")
+    rows = load("eval")[: int(os.getenv('EVAL_N', '0')) or None]
     results, samples = {}, {}
     dev = "cuda" if torch.cuda.is_available() else "cpu"
 
     def run(name, model_dir, adapter=None):
         tok = AutoTokenizer.from_pretrained(model_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.bfloat16).to(dev)
+        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.bfloat16 if dev == 'cuda' else torch.float32).to(dev)
         if adapter:
             model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
         model.eval()
@@ -84,7 +84,9 @@ def main() -> None:
     if (OUT / "dpo_adapter").exists() and (not a.only or a.only == "dpo"):
         run("A2b QLoRA SFT + DPO", str(OUT / "sft_merged"), str(OUT / "dpo_adapter"))
     if a.haiku:
-        key = os.environ["ANTHROPIC_API_KEY"]
+        key = os.environ.get("ANTHROPIC_API_KEY") or next(
+            l.split("=", 1)[1].strip() for l in (HERE.parent / "backend" / ".env").read_text().splitlines()
+            if l.startswith("ANTHROPIC_API_KEY="))
         sub = rows[: a.haiku]
         outs = haiku(sub, key)
         name = f"Haiku 5.5 baseline, facts in prompt (n={a.haiku})"

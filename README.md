@@ -98,7 +98,7 @@ DPO pairs are *chosen = correct fact id*, *rejected = a superseded/not-yet-valid
 wrong id*. See [`training/`](training) and the results table there:
 
 <!-- A2_RESULTS -->
-_Training results: pending (see `training/eval_results.json`)._
+**Status: not yet run.** The data, QLoRA SFT, DPO and eval scripts are written and the configs validate, but no training results exist yet. A CPU-only attempt on the dev laptop took ~440 s per optimizer step (about 4.5 h for SFT alone), so it was abandoned. Run [`training/colab_a2.ipynb`](training/colab_a2.ipynb) on a free Colab T4 (a few minutes), then paste the table printed by `eval.py` here. It compares: A0 base model, A2a QLoRA SFT, A2b SFT + DPO, and Haiku 5.5 with the facts in the prompt.
 
 ## Setup (local)
 
