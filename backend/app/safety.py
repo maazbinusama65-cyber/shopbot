@@ -11,7 +11,7 @@ INJECTION_PATTERNS = [
     r"pretend (that )?(you have|there are) no (rules|restrictions|limits)",
     r"override (your|the) (safety|rules|instructions|policy)",
     r"<\s*/?\s*system\s*>", r"\[\s*system\s*\]",
-    r"(show|dump|list|give me) (me )?(all )?(other|another|every) (users?|customers?)('s)? ",
+    r"(show|dump|list|give me) (me )?(all )?(other|another|every) (users?|customers?)['’]?s?\b",
     r"(api[ _-]?key|admin[ _-]?token|password|secret)s?\b.*\b(show|reveal|give|print|tell)",
     r"\b(show|reveal|give|print|tell)\b.*\b(api[ _-]?key|admin[ _-]?token|secret key)\b",
 ]
