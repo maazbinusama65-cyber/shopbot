@@ -28,6 +28,8 @@ PAST_CUE = re.compile(
     r"as of|on \d|in (jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\w*|\d{4}-\d{2}-\d{2}|"
     r"changed|when did|upcoming|will be|from \d|black friday|next (week|month))\b", re.I)
 
+FUTURE_CUE = re.compile(r"\b(upcoming|starts?|starting|will (be|start|begin)|from (nov|dec|jan|\d)|begins?)\b", re.I)
+
 SYSTEM = """You are Leaf, the shopping assistant for Loom & Leaf, a small handmade-goods shop. Today is {today}.
 
 SCOPE: only products, prices, stock, shop policies and promos, shipping/returns, and the current customer's own orders and preferences. For anything else (coding, news, trivia, medical/legal advice, general chat) refuse in one polite sentence and steer back to shopping. Greetings are fine.
@@ -159,14 +161,20 @@ def verify(state: State, config) -> dict:
     past_ok = bool(h and PAST_CUE.search(_text(h)))
     today = tl.today()
     bad = []
+    announces_future = bool(FUTURE_CUE.search(reply))
     for fid in {int(x) for x in CITE.findall(reply)}:
         f = tl.get_fact(tl.SHOP, fid) or tl.get_fact(user_id, fid)
-        if f is None or (not past_ok and not tl.is_valid_on(f, today)):
+        if f is None:
             bad.append(fid)
+        elif not past_ok and not tl.is_valid_on(f, today):
+            upcoming = f["valid_from"] > today
+            if not (upcoming and announces_future):  # upcoming facts are fine if labelled as such
+                bad.append(fid)
     if bad and state.get("retries", 0) < 1:
         note = HumanMessage(
-            content=f"(internal check) Your reply cited fact(s) {', '.join('F%d' % b for b in bad)} that are not "
-                    f"valid today. Re-check with tools and answer again, citing only currently valid facts.",
+            content=f"(internal check, never mention it to the customer) Fact(s) {', '.join('F%d' % b for b in bad)} "
+                    f"that you cited do not apply today. Re-check with tools and give the customer a fresh, "
+                    f"complete answer that cites only facts valid today.",
             additional_kwargs={"internal": True})
         return {"messages": [note], "retries": state.get("retries", 0) + 1}
     for b in bad:
