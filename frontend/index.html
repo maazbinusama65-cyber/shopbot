@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loom &amp; Leaf — handmade goods</title>
+<meta name="description" content="Small-batch handmade goods with an AI shopping assistant that remembers what you like.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/">Loom <i>&amp;</i> Leaf</a>
+    <nav><a href="#shop" class="keep">Shop</a><a href="#about">How it works</a><a href="admin.html">Seller login</a></nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Made slowly,<br>sold <em>honestly</em>.</h1>
+      <p>Small-batch bags, shoes and outdoor gear. Ask Leaf, our shopping assistant, anything: it knows today’s prices, what changed and when, and it remembers your size and taste next time you visit.</p>
+      <button class="btn" id="hero-chat">Chat with Leaf →</button>
+    </div>
+    <aside class="badge-card" id="about">
+      <b>Prices with a past.</b>
+      <span>Leaf keeps a dated timeline of every price, promo and policy, so it can tell you what applies <em>today</em> and what changed on 1 Nov.</span>
+    </aside>
+  </section>
+
+  <section id="shop">
+    <h2 class="sec">The shop</h2>
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+    <div class="grid" id="grid" aria-live="polite"></div>
+  </section>
+  <footer>© Loom &amp; Leaf · Demo store for a LangGraph agent project · <a href="admin.html">Seller dashboard</a></footer>
+</div>
+
+<button class="btn" id="chat-fab" aria-label="Open shopping assistant">💬 Ask Leaf</button>
+<section id="chat" role="dialog" aria-label="Shopping assistant">
+  <header><b>Leaf · shopping assistant</b>
+    <span><button id="new-thread" title="Start a new conversation (Leaf still remembers you)">New chat</button><button id="close-chat" aria-label="Close chat">✕</button></span>
+  </header>
+  <div id="msgs" aria-live="polite"></div>
+  <div class="quick" id="quick"></div>
+  <form id="form"><input id="input" autocomplete="off" maxlength="1500" placeholder="Ask about products, prices, policies…" aria-label="Message"><button class="btn sm" type="submit">Send</button></form>
+</section>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
