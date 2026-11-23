@@ -14,3 +14,4 @@ training/*.safetensors
 .DS_Store
 *.ckpt
 *.db-journal
+*.log
