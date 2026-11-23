@@ -12,3 +12,5 @@ node_modules/
 training/outputs/
 training/*.safetensors
 .DS_Store
+*.ckpt
+*.db-journal

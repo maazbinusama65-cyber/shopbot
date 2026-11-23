@@ -56,8 +56,8 @@ def llm() -> ChatAnthropic:
     global _llm
     if _llm is None:
         _llm = ChatAnthropic(model=settings.model, api_key=settings.anthropic_api_key or "missing",
-                             max_tokens=settings.max_output_tokens, temperature=0,
-                             timeout=30, max_retries=2)
+                             max_tokens=settings.max_output_tokens,
+                             timeout=30, max_retries=2)  # no temperature: deprecated for this model
     return _llm
 
 

@@ -1,6 +1,22 @@
 """Runtime configuration, read once from environment variables."""
 import os
 from dataclasses import dataclass
+from pathlib import Path
+
+
+def _load_dotenv() -> None:
+    """Tiny .env loader for local dev (real env vars win)."""
+    p = Path(__file__).resolve().parent.parent / ".env"
+    if not p.exists():
+        return
+    for line in p.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.split("  #")[0].strip())
+
+
+_load_dotenv()
 
 
 @dataclass(frozen=True)
