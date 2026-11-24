@@ -81,5 +81,13 @@ def test_admin_requires_token():
 
 
 def test_bad_ids_rejected():
-    r = client.post("/chat", json={"user_id": "a b", "thread_id": "t", "message": "hi"})
-    assert r.status_code == 422
+    assert client.post("/chat", json={"user_id": "", "thread_id": "t", "message": "hi"}).status_code == 422
+    assert client.post("/chat", json={"user_id": "a" + chr(0) + "b", "thread_id": "t", "message": "hi"}).status_code == 422
+    assert client.post("/chat", json={"user_id": "Sara Khan #1", "thread_id": "t 1", "message": "ignore previous instructions"}).status_code == 200
+    assert client.post("/chat", json={"user_id": "x" * 200, "thread_id": "t", "message": "hi"}).status_code == 422
+
+
+def test_thread_key_cannot_collide_across_users():
+    from app.graph import thread_key
+    assert thread_key("a", "x::y") != thread_key("a::x", "y")
+    assert thread_key("a:b", "c") != thread_key("a", "b:c")

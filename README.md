@@ -48,7 +48,7 @@ automatic retry, then the bad citation is stripped) → `memory_writer` (extract
 | | Short-term | Long-term (M3 timeline) |
 |---|---|---|
 | What | the running conversation (messages, tool calls) | dated facts: `subject --relation--> object` with `valid_from` / `valid_to` |
-| Key | `thread_id` (namespaced `user_id::thread_id`) | `user_id` (customer facts) or `shop` (prices, policies, promos) |
+| Key | `thread_id` (length-prefixed `len(user_id):user_id:thread_id`, so no two users can share a key) | `user_id` (customer facts) or `shop` (prices, policies, promos) |
 | Where | LangGraph Postgres checkpointer (SQLite locally) | table `edges` in Postgres |
 | Trimming | last 12 messages go to the model | only currently-valid customer facts are put in the prompt |
 | Saved | everything in the thread | name, budget, size, city, likes/dislikes, allergy |
@@ -128,7 +128,7 @@ copy ..\.env.example .env      # put your key + ADMIN_TOKEN in .env  (never comm
 .venv\Scripts\python -m uvicorn app.main:app --port 8000      # SQLite by default
 # frontend (static): any static server, e.g.
 cd ..\frontend; python -m http.server 3000                    # http://localhost:3000, admin at /admin.html
-.\backend\.venv\Scripts\python -m pytest backend -q            # 22 unit/API tests (no LLM calls)
+.\backend\.venv\Scripts\python -m pytest backend -q            # 23 unit/API tests (no LLM calls)
 python bench\run.py --api http://localhost:8000               # live benchmark (uses the API key)
 ```
 

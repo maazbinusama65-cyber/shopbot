@@ -259,7 +259,8 @@ def get_graph():
 
 
 def thread_key(user_id: str, thread_id: str) -> str:
-    return f"{user_id}::{thread_id}"
+    # length-prefixed so no (user, thread) pair can ever produce the same key as another pair
+    return f"{len(user_id)}:{user_id}:{thread_id}"
 
 
 def run_turn(user_id: str, thread_id: str, message: str, graph=None) -> dict:

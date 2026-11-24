@@ -20,7 +20,9 @@ from .graph import run_turn
 from .seed import seed
 
 log = logging.getLogger("shopbot")
-ID_RE = re.compile(r"^[A-Za-z0-9_.:@-]{1,64}$")
+def _valid_id(value: str) -> bool:
+    """Any printable text up to 128 chars (rejects empty and control characters)."""
+    return 1 <= len(value) <= 128 and value.isprintable()
 
 app = FastAPI(title="ShopBot Agent API")
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins.split(","),
@@ -67,8 +69,8 @@ def _log(user_id, thread_id, role, content, tools=None, tin=0, tout=0, ms=0):
 
 @app.post("/chat")
 def chat(body: ChatIn) -> dict:
-    if not ID_RE.match(body.user_id) or not ID_RE.match(body.thread_id):
-        raise HTTPException(422, "user_id/thread_id must be 1-64 chars of [A-Za-z0-9_.:@-]")
+    if not _valid_id(body.user_id) or not _valid_id(body.thread_id):
+        raise HTTPException(422, "user_id/thread_id must be 1-128 printable characters")
     message = body.message.strip()[: settings.max_message_chars]
     _rate_limit(body.user_id)
     t0 = time.time()
