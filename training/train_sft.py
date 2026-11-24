@@ -5,7 +5,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
 
-from common import fp32_trainables, BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset, BF16, FP16
+from common import merge_sft, fp32_trainables, BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset, BF16, FP16
 
 tok = AutoTokenizer.from_pretrained(BASE)
 rows = subset(load("sft"), "SFT_N")
@@ -27,9 +27,4 @@ trainer.model.save_pretrained(OUT / "sft_adapter")
 # Merge the adapter into a full-precision copy: it becomes the reference model for DPO.
 del trainer, model
 torch.cuda.empty_cache()
-from peft import PeftModel
-base = AutoModelForCausalLM.from_pretrained(BASE, torch_dtype=torch.float32)
-merged = PeftModel.from_pretrained(base, OUT / "sft_adapter").merge_and_unload()
-merged.save_pretrained(OUT / "sft_merged")
-tok.save_pretrained(OUT / "sft_merged")
-print("saved", OUT / "sft_adapter", "and", OUT / "sft_merged")
+merge_sft()

@@ -56,3 +56,14 @@ def fp32_trainables(model) -> int:
         if p_.requires_grad and p_.dtype != torch.float32:
             p_.data = p_.data.float(); n += 1
     return n
+
+
+def merge_sft() -> None:
+    """Merge the saved SFT LoRA adapter into a full-precision copy (the DPO reference model)."""
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+    base = AutoModelForCausalLM.from_pretrained(BASE, dtype=torch.float32)
+    merged = PeftModel.from_pretrained(base, OUT / "sft_adapter").merge_and_unload()
+    merged.save_pretrained(OUT / "sft_merged")
+    AutoTokenizer.from_pretrained(BASE).save_pretrained(OUT / "sft_merged")
+    print("saved", OUT / "sft_merged")
