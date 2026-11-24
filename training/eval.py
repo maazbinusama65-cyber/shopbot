@@ -48,7 +48,7 @@ def generate(model, tok, rows: list[dict]) -> list[str]:
 def haiku(rows: list[dict], key: str) -> list[str]:
     outs = []
     for r in rows:
-        body = {"model": "claude-haiku-5-5", "max_tokens": 40, "system": r["system"],
+        body = {"model": "claude-haiku-5-5", "max_tokens": 400, "system": r["system"],
                 "messages": [{"role": "user", "content": r["prompt"]}]}
         req = urllib.request.Request("https://api.anthropic.com/v1/messages", json.dumps(body).encode(),
                                      {"x-api-key": key, "anthropic-version": "2023-06-01", "Content-Type": "application/json"})
@@ -90,7 +90,7 @@ def main() -> None:
         sub = rows[: a.haiku]
         outs = haiku(sub, key)
         name = f"Haiku 5.5 baseline, facts in prompt (n={a.haiku})"
-        results[name] = score(sub, outs)
+        results[name], samples[name] = score(sub, outs), outs[:5]
         print(name, results[name], flush=True)
     (HERE / "eval_results.json").write_text(json.dumps({"results": results, "samples": samples}, indent=2))
     print("\n| Model | n | format ok | cite acc | value acc | both | stale-cite |\n|---|---|---|---|---|---|---|")

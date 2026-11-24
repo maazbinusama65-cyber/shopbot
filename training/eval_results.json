@@ -1,0 +1,44 @@
+{
+  "note": "A0/A2a/A2b: full-size run on a Colab T4 (QLoRA 4-bit, 1500 SFT examples x 2 epochs, 900 DPO pairs), numbers transcribed from the eval.py output of that run (the Colab run crashed afterwards at the Haiku step, so it wrote no JSON). Haiku row: run locally with eval.py on the first 100 eval rows. Single run, single seed.",
+  "results": {
+    "A0 base Qwen2.5-0.5B-Instruct (no fine-tune)": {
+      "n": 200,
+      "format_ok": 0.495,
+      "cite_acc": 0.155,
+      "value_acc": 0.145,
+      "both": 0.045,
+      "stale_cite": 0.34
+    },
+    "A2a QLoRA SFT": {
+      "n": 200,
+      "format_ok": 1.0,
+      "cite_acc": 0.54,
+      "value_acc": 0.55,
+      "both": 0.54,
+      "stale_cite": 0.46
+    },
+    "A2b QLoRA SFT + DPO": {
+      "n": 200,
+      "format_ok": 1.0,
+      "cite_acc": 0.625,
+      "value_acc": 0.665,
+      "both": 0.62,
+      "stale_cite": 0.375
+    },
+    "Haiku 5.5 baseline, facts in prompt (n=100)": {
+      "n": 100,
+      "format_ok": 1.0,
+      "cite_acc": 1.0,
+      "value_acc": 1.0,
+      "both": 1.0,
+      "stale_cite": 0.0
+    }
+  },
+  "haiku_samples": [
+    "The Linen Shirt cost **$205 [F304]** on 2026-07-13. This fact has been valid since 2026-02-24 and has no end date. The older price of $200 [F67] expired on 2026-06-29, so it no longer applies.",
+    "The Merino Beanie was priced at **$90 [F19]** on 2026-01-18.",
+    "On 2026-02-05, the Canvas Belt price was **$84 [F94]**. That fact was valid from 2026-01-01 through 2026-09-28, which includes the question date.",
+    "The Silk Sleep Mask is currently $108 [F81].",
+    "On 2026-06-21, the Cotton Tee price was **$17 [F96]**. That fact was valid from 2026-01-01 through 2026-11-02, which includes June 21."
+  ]
+}

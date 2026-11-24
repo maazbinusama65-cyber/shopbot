@@ -99,7 +99,25 @@ DPO pairs are *chosen = correct fact id*, *rejected = a superseded/not-yet-valid
 wrong id*. See [`training/`](training) and the results table there:
 
 <!-- A2_RESULTS -->
-**Status: not yet run.** The data, QLoRA SFT, DPO and eval scripts are written and the configs validate, but no training results exist yet. A CPU-only attempt on the dev laptop took ~440 s per optimizer step (about 4.5 h for SFT alone), so it was abandoned. Run [`training/colab_a2.ipynb`](training/colab_a2.ipynb) on a free Colab T4 (a few minutes), then paste the table printed by `eval.py` here. It compares: A0 base model, A2a QLoRA SFT, A2b SFT + DPO, and Haiku 5.5 with the facts in the prompt.
+Full-size run on a free Colab T4 (QLoRA 4-bit NF4, 1,500 SFT examples × 2 epochs, then 900 DPO pairs), evaluated on 200 held-out
+questions that share no prompt with the training data (`training/make_data.py` asserts this). *cite acc* = the first cited `[F#]` is
+the fact that was valid on the question date; *stale-cite* = it cited a fact that was **not** valid on that date.
+
+| Model | n | format ok | cite acc | value acc | both right | stale-cite |
+|---|---|---|---|---|---|---|
+| A0 base Qwen2.5-0.5B-Instruct (no fine-tune) | 200 | 49.5% | 15.5% | 14.5% | 4.5% | 34.0% |
+| A2a QLoRA SFT | 200 | 100% | 54.0% | 55.0% | 54.0% | 46.0% |
+| **A2b QLoRA SFT + DPO** | 200 | 100% | **62.5%** | **66.5%** | **62.0%** | 37.5% |
+| Haiku 5.5, timeline in the prompt, no fine-tuning | 100 | 100% | 100% | 100% | 100% | 0% |
+
+What this does and does not show:
+- SFT taught the small model the answer format and lifted "both right" from 4.5% to 54%; DPO on correct-vs-superseded citation pairs added
+  about 8 points (54% → 62%) and cut stale citations from 46% to 37.5%. It is a **single run with one seed**, so a few points of that gain may be noise.
+- The tuned 0.5B model is **far below Haiku** (100% when the dated facts are in its prompt). So the deployed agent does **not** use it: it uses Haiku
+  plus the rule-based `verify` node. The result that matters for the product is that *with the M3 timeline in context, Haiku never cites a stale fact*.
+- Data are synthetic and generated from the same timeline schema, so this measures the skill, not end-to-end shop quality. Haiku was scored on 100 rows
+  (cost), the local models on 200; the first 100 rows are common to both.
+- Raw numbers: `training/eval_results.json`. Reproduce with `training/colab_a2.ipynb`.
 
 ## Setup (local)
 
