@@ -1,0 +1,11 @@
+.env
+.env.*
+.venv
+tests
+smoke.py
+*.db
+*.db.ckpt
+__pycache__
+Dockerfile
+.vercel
+api

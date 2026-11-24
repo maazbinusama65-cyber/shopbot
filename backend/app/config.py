@@ -23,8 +23,9 @@ _load_dotenv()
 class Settings:
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
     model: str = os.getenv("MODEL", "claude-haiku-5-5")
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///shopbot.db")
-    admin_token: str = os.getenv("ADMIN_TOKEN", "change-me")
+    database_url: str = os.getenv("DATABASE_URL") or (
+        "sqlite:////tmp/shopbot.db" if os.getenv("VERCEL") else "sqlite:///shopbot.db")  # /tmp is ephemeral: set DATABASE_URL in prod
+    admin_token: str = os.getenv("ADMIN_TOKEN", "")
     cors_origins: str = os.getenv("CORS_ORIGINS", "*")
     max_message_chars: int = int(os.getenv("MAX_MESSAGE_CHARS", "1500"))
     history_window: int = int(os.getenv("HISTORY_WINDOW", "12"))

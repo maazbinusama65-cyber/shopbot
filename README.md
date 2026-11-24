@@ -9,8 +9,8 @@ price, and the return policy before and after 1 November.
 
 | | |
 |---|---|
-| Live website | `https://REPLACE-ME.vercel.app` |
-| Agent API | `https://REPLACE-ME.onrender.com` (`POST /chat`, `GET /health`) |
+| Live website | https://shopbot-store.vercel.app (seller dashboard: `/admin.html`) |
+| Agent API | https://shopbot-api-chi.vercel.app (`POST /chat`, `GET /health`, open, no login) |
 | Demo video | _add link_ |
 | Demo GIF | `docs/demo.gif` _(record: ask price now → "and in September?" → owner edits price in dashboard → order → "confirm")_ |
 
@@ -82,6 +82,7 @@ prompt: no tools, no memory, no guards (M0 + A0). Measured locally with the real
 | System | Functional (10) | Attacks (5) | Avg latency / case | Tokens in / out (15 cases) |
 |---|---|---|---|---|
 | **ShopBot (M3 timeline memory + tools + guards)** | **10/10 (100%)** | **5/5 (100%)** | 7.9 s / 3.4 s | 32,944 / 2,638 (func.), 6,546 / 439 (attacks) |
+| **ShopBot, deployed (Vercel + Supabase), 24 Nov** | **10/10 (100%)** | **5/5 (100%)** | 12.3 s / 5.5 s | 42,951 / 3,472 (func.), 6,562 / 508 (attacks) |
 | Baseline: plain Haiku (M0 + A0) | 3/10 (30%) | 3/5 (60%) | 3.0 s / 2.6 s | 1,536 / 2,117 (func.), 492 / 800 (attacks) |
 
 The baseline fails by construction on anything that needs shop data (it has no tools) or memory; read the
@@ -117,8 +118,7 @@ python bench\run.py --api http://localhost:8000               # live benchmark (
 
 1. **Database:** create a Supabase or Neon project, copy the *pooled* Postgres connection string → `DATABASE_URL`.
    Tables and the LangGraph checkpoint tables are created automatically on first start; demo data is seeded.
-2. **Agent API:** Render (Docker, root dir `backend`) or a Hugging Face Space (Docker SDK, copy `backend/` to the
-   Space). Set env vars `ANTHROPIC_API_KEY`, `MODEL=claude-haiku-5-5`, `DATABASE_URL`, `ADMIN_TOKEN`,
+2. **Agent API:** deployed on Vercel (`backend/`, entrypoint `index.py`, Python 3.12; `vercel deploy --prod` from `backend/`), or Render (Docker, root dir `backend`, see `render.yaml`) or a Hugging Face Space (Docker SDK). Set env vars `ANTHROPIC_API_KEY`, `MODEL=claude-haiku-5-5`, `DATABASE_URL`, `ADMIN_TOKEN`,
    `CORS_ORIGINS=https://<your-site>.vercel.app`. Health check path: `/health`.
 3. **Website:** set `API_BASE` in `frontend/config.js` to the API URL, then import the repo into Vercel with
    *Root Directory* `frontend` (no build step).

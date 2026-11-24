@@ -27,10 +27,14 @@ app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins.split(","
                    allow_methods=["*"], allow_headers=["*"])
 
 
-@app.on_event("startup")
-def _startup() -> None:
+def _bootstrap() -> None:
+    """Idempotent: create tables and seed demo data. Runs at import so it also works on
+    serverless hosts (Vercel) that do not run ASGI lifespan events."""
     init_schema()
     seed()
+
+
+_bootstrap()
 
 
 # ------------------------------------------------------------------ graded API
