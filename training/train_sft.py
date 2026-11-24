@@ -5,7 +5,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
 
-from common import BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset
+from common import BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset, BF16, FP16
 
 tok = AutoTokenizer.from_pretrained(BASE)
 rows = subset(load("sft"), "SFT_N")
@@ -17,7 +17,7 @@ lora = LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, task_type="CAUSAL_LM",
                   target_modules=["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"])
 cfg = SFTConfig(output_dir=str(OUT / "sft_run"), num_train_epochs=int(__import__('os').getenv('SFT_EPOCHS', '2')), per_device_train_batch_size=4,
                 gradient_accumulation_steps=4, learning_rate=2e-4, lr_scheduler_type="cosine", warmup_steps=0.05,
-                logging_steps=10, save_strategy="no", bf16=HAS_CUDA, use_cpu=not HAS_CUDA, gradient_checkpointing=HAS_CUDA,
+                logging_steps=10, save_strategy="no", bf16=BF16, fp16=FP16, use_cpu=not HAS_CUDA, gradient_checkpointing=HAS_CUDA,
                 max_length=768, dataset_text_field="text", report_to="none")
 trainer = SFTTrainer(model=model, args=cfg, train_dataset=ds, peft_config=lora, processing_class=tok)
 trainer.train()

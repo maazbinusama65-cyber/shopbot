@@ -16,7 +16,7 @@ import torch
 from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from common import BASE, HERE, OUT, chat_prompt, load
+from common import BASE, DTYPE, HERE, OUT, chat_prompt, load
 
 CITE = re.compile(r"\[F(\d+)\]")
 
@@ -67,7 +67,7 @@ def main() -> None:
 
     def run(name, model_dir, adapter=None):
         tok = AutoTokenizer.from_pretrained(model_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=torch.bfloat16 if dev == 'cuda' else torch.float32).to(dev)
+        model = AutoModelForCausalLM.from_pretrained(model_dir, torch_dtype=DTYPE).to(dev)
         if adapter:
             model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
         model.eval()
