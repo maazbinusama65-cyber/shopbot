@@ -5,7 +5,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import SFTConfig, SFTTrainer
 
-from common import BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset, BF16, FP16
+from common import fp32_trainables, BASE, MODE, OUT, HAS_CUDA, chat_prompt, load, model_kwargs, subset, BF16, FP16
 
 tok = AutoTokenizer.from_pretrained(BASE)
 rows = subset(load("sft"), "SFT_N")
@@ -20,6 +20,7 @@ cfg = SFTConfig(output_dir=str(OUT / "sft_run"), num_train_epochs=int(__import__
                 logging_steps=10, save_strategy="no", bf16=BF16, fp16=FP16, use_cpu=not HAS_CUDA, gradient_checkpointing=HAS_CUDA,
                 max_length=768, dataset_text_field="text", report_to="none")
 trainer = SFTTrainer(model=model, args=cfg, train_dataset=ds, peft_config=lora, processing_class=tok)
+print('cast trainable params to fp32:', fp32_trainables(trainer.model))
 trainer.train()
 trainer.model.save_pretrained(OUT / "sft_adapter")
 

@@ -40,10 +40,19 @@ MODE = "QLoRA (4-bit NF4)" if HAS_CUDA else "LoRA on CPU (no CUDA available: not
 def model_kwargs() -> dict:
     """4-bit QLoRA on a GPU; plain fp32 LoRA on CPU (bitsandbytes needs CUDA)."""
     if HAS_CUDA:
-        return {"quantization_config": bnb_config(), "device_map": {"": 0}, "torch_dtype": DTYPE}
-    return {"torch_dtype": torch.float32}
+        return {"quantization_config": bnb_config(), "device_map": {"": 0}, "dtype": DTYPE}
+    return {"dtype": torch.float32}
 
 
 def subset(rows: list, env: str) -> list:
     n = int(os.getenv(env, "0")) or len(rows)
     return rows[:n]
+
+
+def fp32_trainables(model) -> int:
+    """fp16 AMP (T4) needs trainable params in fp32: the GradScaler cannot unscale bf16/fp16 grads."""
+    n = 0
+    for p_ in model.parameters():
+        if p_.requires_grad and p_.dtype != torch.float32:
+            p_.data = p_.data.float(); n += 1
+    return n

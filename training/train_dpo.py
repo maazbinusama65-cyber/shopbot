@@ -6,7 +6,7 @@ from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from trl import DPOConfig, DPOTrainer
 
-from common import BF16, FP16, HAS_CUDA, MODE, OUT, chat_prompt, load, model_kwargs, subset
+from common import fp32_trainables, BF16, FP16, HAS_CUDA, MODE, OUT, chat_prompt, load, model_kwargs, subset
 
 SFT = str(OUT / "sft_merged")
 tok = AutoTokenizer.from_pretrained(SFT)
@@ -24,6 +24,7 @@ cfg = DPOConfig(output_dir=str(OUT / "dpo_run"), num_train_epochs=1, per_device_
                 max_length=768, report_to="none")
 trainer = DPOTrainer(model=model, ref_model=None, args=cfg, train_dataset=ds, processing_class=tok,
                      peft_config=lora)
+print('cast trainable params to fp32:', fp32_trainables(trainer.model))
 trainer.train()
 trainer.model.save_pretrained(OUT / "dpo_adapter")
 print("saved", OUT / "dpo_adapter")
