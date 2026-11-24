@@ -11,8 +11,8 @@ price, and the return policy before and after 1 November.
 |---|---|
 | Live website | https://shopbot-store.vercel.app (seller dashboard: `/admin.html`) |
 | Agent API | https://shopbot-api-chi.vercel.app (`POST /chat`, `GET /health`, open, no login) |
-| Demo video | _add link_ |
-| Demo GIF | `docs/demo.gif` _(record: ask price now → "and in September?" → owner edits price in dashboard → order → "confirm")_ |
+| Demo video | [`docs/shopbot-demo.mp4`](docs/shopbot-demo.mp4) (2:51, AI narration) — YouTube/Drive link: _add after upload_ |
+| Demo GIF | ![demo](docs/demo.gif) |
 
 ## Architecture
 
