@@ -1,6 +1,0 @@
-# ShopBot harness settings (paths only)
-version: "1.0"
-paths:
-  corpus_dir: "harness/corpus"
-  data_dir: "harness/data"
-  results_dir: "results"

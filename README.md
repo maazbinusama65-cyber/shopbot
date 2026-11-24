@@ -151,19 +151,3 @@ frontend/     storefront + chat widget + seller dashboard (static)
 training/     A2 data generation, QLoRA SFT, DPO, eval      docs/product-canvas.md  workshop canvas answers
 tests.json · tests_attacks.json               .env.example
 ```
-
-## Repository layout
-
-```
-backend/    agent API (FastAPI + LangGraph): app/, tests/, Dockerfile
-frontend/   store page and seller dashboard
-bench/      benchmark runner against a live API (tests.json, tests_attacks.json)
-training/   fine-tuning (QLoRA SFT -> DPO) and eval
-harness/    test-session tooling: FORMAT.md, validate_sessions.py, corpus/ (shop facts), data/
-contrib/    our test sessions (G29.jsonl) and the validate command
-templates/  MEMORY.md write-up template
-review/     peer review files
-results/    evaluation outputs
-docs/       product canvas, demo video
-.github/    CI: validates contrib/*.jsonl and runs backend tests
-```
